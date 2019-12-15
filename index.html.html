@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>轮播图</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript" src="animate.js"></script>
+</head>
+<body>
+
+	<div class="roll" id="roll">
+		<img src="images/a15.png">
+		<div id="rollingText"><span id="text">[温馨提示]最近有不少不法分子在网上骗人，请大家注意！！！</span></div>
+	</div>
+	<div class="box" id="box">
+		<div class="slider" id="slider">
+			<div class="slide">
+				<img src="images/b5.png">
+				<img src="images/b1.png">
+				<img src="images/b2.png">
+				<img src="images/b3.png">
+				<img src="images/b4.png">
+				<img src="images/b5.png">
+				<img src="images/b1.png">
+			</div>			
+		</div>
+		<span id="left"><</span>
+		<span id="right">></span>
+		<ul class="nav" id="nav">
+			<li class="active">1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+	</div>
+	<script type="text/javascript">
+		var roll = document.getElementById("roll");
+		var rollingText = document.getElementById("rollingText");
+		var text = document.getElementById("text");
+		var box = document.getElementById("box");
+		var oNavlist = document.getElementById("nav").children;
+		var slider = document.getElementById("slider");
+		var slide =document.getElementById("slide");
+		var left = document.getElementById("left");
+		var right = document.getElementById("right");
+		var index = 1;
+		var timer;
+		var isMoving = false;
+
+		//滚动条
+		function rol(){
+			var locate = parseInt(getStyle(text,"left"));
+			text.style.left = locate-1+"px";
+			if(locate == -360){
+				text.style.left = 1200+"px";
+			}
+		}
+
+		setInterval(rol,15);
+
+
+		//轮播下一张的函数(左箭头)
+		function next(){//封装起来
+			if (!isMoving) {
+				isMoving=true;
+				index++;
+				navChange();//轮番图片对应list点变色
+				animate(slider,{left:-1200*index},function(){
+					if (index===6) {//边界值判断
+						slider.style.left="-6000px";
+						index = 1;
+					}
+					isMoving= false;
+				});
+			}	
+		}
+		timer = setInterval(next,3000);
+		function prev(){//封装起来
+			//破坏点击规则，则点击无效
+			if (!isMoving) {
+				isMoving = true;
+				index--;
+				navChange();
+				animate(slider,{left:-1200*index},function(){
+					if (index===0) {//边界值判断
+						slider.style.left="-6000px";
+						index = 5;
+					}
+					isMoving=false;
+				});
+			}
+		}
+		
+		//鼠标划入关闭定时器
+		box.onmouseover = function(){
+			animate(left,{opacity:50});
+			animate(right,{opacity:50});
+			clearInterval(timer);
+		}
+		//鼠标滑出打开定时器
+		box.onmouseout = function(){
+			animate(left,{opacity:0});
+			animate(right,{opacity:0});
+			timer = setInterval(next,3000);
+		}
+		//左右箭头
+		right.onclick = next;
+		left.onclick = prev;
+
+		//点击li
+		for(var i=0;i<oNavlist.length;i++){
+			oNavlist[i].idx = i;//添加属性
+			oNavlist[i].onclick = function(){
+				//console.log(i);i不是当前下标
+				console.log(this.idx);//现在是下标
+				index = this.idx+1;
+				navChange();
+				animate(slider,{left:-1200*index})
+			}
+		}
+		//小按钮背景图切换
+		function navChange(){
+			//先把所有的active清空，然后再对应添加
+			for(var i =0;i<oNavlist.length;i++){
+				oNavlist[i].className = ' ';
+			}
+
+			//给节点加类名，上面index最大是6，而list的下标最大是4
+			if(index==6){
+				oNavlist[0].className = 'active';
+			}else if (index==0) {
+				oNavlist[4].className = 'active';
+			}else{
+				oNavlist[index-1].className = 'active';
+			}
+			
+			
+		}
+
+
+
+	</script>
+</body>
+</html>
